@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../models.dart';
 import '../profile_screen.dart';
 import 'admin_catalog_screen.dart';
+import 'admin_customers_screen.dart';
 import 'admin_orders_screen.dart';
 
 class AdminHome extends StatefulWidget {
@@ -22,6 +23,7 @@ class _AdminHomeState extends State<AdminHome> {
       body: IndexedStack(index: _tab, children: [
         const AdminOrdersScreen(),
         const AdminCatalogScreen(),
+        const AdminCustomersScreen(),
         ProfileScreen(profile: widget.profile),
       ]),
       bottomNavigationBar: NavigationBar(
@@ -30,6 +32,7 @@ class _AdminHomeState extends State<AdminHome> {
         destinations: const [
           NavigationDestination(icon: Icon(Icons.inbox_outlined), selectedIcon: Icon(Icons.inbox), label: 'Ordini'),
           NavigationDestination(icon: Icon(Icons.inventory_2_outlined), selectedIcon: Icon(Icons.inventory_2), label: 'Catalogo'),
+          NavigationDestination(icon: Icon(Icons.groups_outlined), selectedIcon: Icon(Icons.groups), label: 'Clienti'),
           NavigationDestination(icon: Icon(Icons.person_outline), selectedIcon: Icon(Icons.person), label: 'Profilo'),
         ],
       ),

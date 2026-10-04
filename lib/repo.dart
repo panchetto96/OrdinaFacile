@@ -55,8 +55,10 @@ class Repo {
 
   // --- Catalogo --------------------------------------------------------------
 
+  /// [onlyAvailable] = vista cliente: catalogo con i prezzi riservati al cliente collegato.
+  /// Altrimenti listino generale completo (per il titolare).
   Future<List<Product>> products({bool onlyAvailable = true}) async {
-    var q = db.from('products').select();
+    var q = db.from(onlyAvailable ? 'my_catalog' : 'products').select();
     if (onlyAvailable) q = q.eq('available', true);
     final rows = await q.order('category').order('name');
     return rows.map(Product.fromMap).toList();
@@ -95,6 +97,31 @@ class Repo {
       await db.from('products').upsert([for (final r in chunk) {...r, 'updated_at': now}], onConflict: 'name');
     }
   }
+
+  // --- Clienti e prezzi riservati --------------------------------------------
+
+  Future<List<Profile>> customers() async {
+    final rows = await db.from('profiles').select().eq('role', 'customer').order('business_name');
+    return rows.map(Profile.fromMap).toList();
+  }
+
+  /// productId -> prezzo riservato al cliente.
+  Future<Map<int, double>> customerPrices(String customerId) async {
+    final rows = await db.from('customer_prices').select('product_id, price').eq('customer_id', customerId);
+    return {for (final r in rows) r['product_id'] as int: (r['price'] as num).toDouble()};
+  }
+
+  Future<void> setCustomerPrice(String customerId, int productId, double price) async {
+    await db.from('customer_prices').upsert({
+      'customer_id': customerId,
+      'product_id': productId,
+      'price': price,
+      'updated_at': DateTime.now().toUtc().toIso8601String(),
+    });
+  }
+
+  Future<void> removeCustomerPrice(String customerId, int productId) =>
+      db.from('customer_prices').delete().eq('customer_id', customerId).eq('product_id', productId);
 
   // --- Ordini ----------------------------------------------------------------
 

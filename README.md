@@ -17,7 +17,7 @@ gli ordini dalla stessa app. Nessun pagamento passa dall'app.
 | --- | --- |
 | `lib/screens/auth/` | Accesso (email o nome utente) e registrazione con profilo attività |
 | `lib/screens/customer/` | Catalogo, carrello, i miei ordini |
-| `lib/screens/admin/` | Ordini in arrivo (tempo reale, cambio stato), gestione catalogo e import Excel/CSV |
+| `lib/screens/admin/` | Ordini in arrivo (tempo reale, cambio stato), gestione catalogo e import Excel/CSV, clienti e prezzi riservati |
 | `lib/catalog_import.dart` | Lettura del catalogo da `.xlsx` o `.csv` |
 | `supabase/migrations/0001_init.sql` | Tabelle, regole di sicurezza (RLS), funzione `place_order` |
 | `docs/catalogo_esempio.csv` | Esempio del file catalogo |
@@ -33,6 +33,12 @@ gli ordini dalla stessa app. Nessun pagamento passa dall'app.
    - imposta i segreti `RESEND_API_KEY`, `ORDER_EMAIL_TO`, `ORDER_EMAIL_FROM`
    - in Database → Webhooks crea un webhook su INSERT di `orders` verso la funzione.
 4. **APK**: ogni push su `main` genera l'APK, scaricabile dalla pagina della run in Actions.
+
+## Prezzi riservati
+
+Il listino generale vale per tutti. Dalla scheda **Clienti** il titolare può fissare,
+prodotto per prodotto, un prezzo diverso per un singolo cliente: il cliente lo vede nel
+catalogo e viene usato nei suoi ordini (`customer_prices`, vista `my_catalog`).
 
 ## Formato del catalogo
 

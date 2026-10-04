@@ -85,7 +85,19 @@ class _CatalogScreenState extends State<CatalogScreen> {
                           final p = shown[i];
                           return ListTile(
                             title: Text(p.name),
-                            subtitle: Text('${p.category} · ${pricePerUnit(p.price, p.unit)}'),
+                            subtitle: Text.rich(TextSpan(children: [
+                              TextSpan(text: '${p.category} · ${pricePerUnit(p.price, p.unit)}'),
+                              if (p.customPrice && p.price < p.listPrice)
+                                TextSpan(
+                                  text: '  ${euro(p.listPrice)}',
+                                  style: const TextStyle(decoration: TextDecoration.lineThrough),
+                                ),
+                              if (p.customPrice)
+                                TextSpan(
+                                  text: '\nPrezzo riservato a te',
+                                  style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600),
+                                ),
+                            ])),
                             trailing: QuantityStepper(product: p),
                           );
                         },
