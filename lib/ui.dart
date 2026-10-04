@@ -53,3 +53,21 @@ class AsyncView<T> extends StatelessWidget {
     );
   }
 }
+
+/// Con la lista ordinata per categoria, aggiunge sopra a [tile] il nome della
+/// categoria quando [i] è il primo prodotto di una nuova categoria.
+Widget withCategoryHeader(BuildContext context, List<String> categories, int i, Widget tile) {
+  if (i > 0 && categories[i] == categories[i - 1]) return tile;
+  final theme = Theme.of(context);
+  return Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+    Container(
+      color: theme.colorScheme.surfaceContainerHighest,
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 10),
+      child: Text(
+        categories[i].toUpperCase(),
+        style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
+      ),
+    ),
+    tile,
+  ]);
+}

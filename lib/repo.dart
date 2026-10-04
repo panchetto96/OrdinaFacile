@@ -60,7 +60,7 @@ class Repo {
   Future<List<Product>> products({bool onlyAvailable = true}) async {
     var q = db.from(onlyAvailable ? 'my_catalog' : 'products').select();
     if (onlyAvailable) q = q.eq('available', true);
-    final rows = await q.order('category').order('name');
+    final rows = await q.order('category', ascending: true).order('name', ascending: true);
     return rows.map(Product.fromMap).toList();
   }
 
@@ -101,7 +101,7 @@ class Repo {
   // --- Clienti e prezzi riservati --------------------------------------------
 
   Future<List<Profile>> customers() async {
-    final rows = await db.from('profiles').select().eq('role', 'customer').order('business_name');
+    final rows = await db.from('profiles').select().eq('role', 'customer').order('business_name', ascending: true);
     return rows.map(Profile.fromMap).toList();
   }
 
