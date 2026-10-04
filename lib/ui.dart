@@ -10,7 +10,7 @@ String errorText(Object e) => switch (e) {
 
 String _authMessage(String m) {
   final l = m.toLowerCase();
-  if (l.contains('invalid login')) return 'Email/nome utente o password errati';
+  if (l.contains('invalid login')) return 'Email o password errati';
   if (l.contains('already registered')) return 'Esiste già un account con questa email';
   if (l.contains('email not confirmed')) return 'Conferma prima l\'email cliccando il link che ti abbiamo inviato';
   if (l.contains('password')) return 'La password deve avere almeno 6 caratteri';

@@ -47,10 +47,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 32),
                 TextFormField(
                   controller: _login,
-                  decoration: const InputDecoration(labelText: 'Email o nome utente'),
+                  decoration: const InputDecoration(labelText: 'Email'),
                   keyboardType: TextInputType.emailAddress,
-                  autofillHints: const [AutofillHints.username],
-                  validator: (v) => (v ?? '').trim().isEmpty ? 'Campo obbligatorio' : null,
+                  autofillHints: const [AutofillHints.email],
+                  validator: (v) => (v ?? '').contains('@') ? null : 'Inserisci la tua email',
                 ),
                 const SizedBox(height: 12),
                 TextFormField(

@@ -13,15 +13,8 @@ class Repo {
 
   // --- Account ---------------------------------------------------------------
 
-  /// Accetta email oppure nome utente.
-  Future<void> signIn(String login, String password) async {
-    var email = login.trim();
-    if (!email.contains('@')) {
-      final found = await db.rpc('email_for_username', params: {'p_username': email});
-      if (found == null) throw const AuthException('Nome utente non trovato');
-      email = found as String;
-    }
-    await db.auth.signInWithPassword(email: email, password: password);
+  Future<void> signIn(String email, String password) async {
+    await db.auth.signInWithPassword(email: email.trim(), password: password);
   }
 
   Future<void> signUp({
@@ -41,6 +34,13 @@ class Repo {
   }
 
   Future<void> signOut() => db.auth.signOut();
+
+  /// Cancella i dati personali del cliente e disattiva l'accesso; ordini e fatture
+  /// restano senza dati personali per la contabilità.
+  Future<void> deleteMyAccount() async {
+    await db.rpc('delete_my_account');
+    await db.auth.signOut();
+  }
 
   Future<Profile> myProfile() async {
     final row = await db.from('profiles').select().eq('id', db.auth.currentUser!.id).single();
