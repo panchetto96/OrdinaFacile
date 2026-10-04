@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:excel/excel.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:ordinafacile/app_update.dart';
 import 'package:ordinafacile/cart.dart';
 import 'package:ordinafacile/catalog_import.dart';
 import 'package:ordinafacile/models.dart';
@@ -84,5 +85,12 @@ void main() {
     expect(missing, ['Olive', 'Prodotto eliminato']);
     expect(cart.quantityOf(salame), 3);
     expect(cart.total, 6.0);
+  });
+
+  test('aggiornamento: proposto solo se la build è più nuova', () {
+    const json = '{"build": 12, "name": "1.0.0 (12)", "url": "https://example.com/OrdinaFacile-12.apk"}';
+    expect(newerVersion(json, 11)?.url.toString(), 'https://example.com/OrdinaFacile-12.apk');
+    expect(newerVersion(json, 12), isNull);
+    expect(newerVersion(json, 13), isNull);
   });
 }

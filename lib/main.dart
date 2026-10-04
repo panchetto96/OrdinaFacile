@@ -4,6 +4,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'app_update.dart';
 import 'cart.dart';
 import 'config.dart';
 import 'repo.dart';
@@ -45,7 +46,7 @@ class OrdinaFacileApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      home: const AuthGate(),
+      home: const UpdateChecker(child: AuthGate()),
     );
   }
 }
