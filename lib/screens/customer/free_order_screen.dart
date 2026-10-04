@@ -65,6 +65,20 @@ class _FreeOrderScreenState extends State<FreeOrderScreen> {
     }
   }
 
+  /// Pulsante grande, facile da toccare anche per chi usa poco il telefono.
+  Widget _photoButton({required IconData icon, required String label, required VoidCallback onPressed}) {
+    return FilledButton.tonalIcon(
+      onPressed: _busy ? null : onPressed,
+      icon: Icon(icon, size: 32),
+      label: Text(label),
+      style: FilledButton.styleFrom(
+        minimumSize: const Size.fromHeight(76),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -79,23 +93,17 @@ class _FreeOrderScreenState extends State<FreeOrderScreen> {
               child: Text('Fotografa il foglio con il tuo ordine.', textAlign: TextAlign.center),
             ),
           const SizedBox(height: 12),
-          Row(children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: _busy ? null : () => _pick(ImageSource.camera),
-                icon: const Icon(Icons.photo_camera),
-                label: Text(_photo == null ? 'Scatta foto' : 'Rifai foto'),
-              ),
-            ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: _busy ? null : () => _pick(ImageSource.gallery),
-                icon: const Icon(Icons.photo_library),
-                label: const Text('Dalla galleria'),
-              ),
-            ),
-          ]),
+          _photoButton(
+            icon: Icons.photo_camera,
+            label: _photo == null ? 'Scatta foto' : 'Rifai foto',
+            onPressed: () => _pick(ImageSource.camera),
+          ),
+          const SizedBox(height: 12),
+          _photoButton(
+            icon: Icons.photo_library,
+            label: 'Aggiungi foto dalla galleria',
+            onPressed: () => _pick(ImageSource.gallery),
+          ),
           const SizedBox(height: 16),
         ],
         TextField(
