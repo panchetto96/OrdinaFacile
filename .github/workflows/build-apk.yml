@@ -69,3 +69,11 @@ jobs:
           curl -sSf -X POST "$SUPABASE_URL/storage/v1/object/app/version.json" "${auth[@]}" \
             -H "x-upsert: true" -H "Content-Type: application/json" -H "cache-control: max-age=60" \
             --data-binary @version.json
+          # Tiene su Supabase solo l'ultimo APK, per non riempire lo spazio gratuito (1 GB).
+          old=$(curl -sSf -X POST "$SUPABASE_URL/storage/v1/object/list/app" "${auth[@]}" \
+            -H "Content-Type: application/json" -d '{"prefix": "", "limit": 1000}' \
+            | jq -c --arg keep "$apk" '[.[].name | select(endswith(".apk") and . != $keep)]')
+          if [ "$old" != "[]" ]; then
+            curl -sSf -X DELETE "$SUPABASE_URL/storage/v1/object/app" "${auth[@]}" \
+              -H "Content-Type: application/json" -d "{\"prefixes\": $old}"
+          fi
