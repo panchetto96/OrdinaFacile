@@ -33,7 +33,7 @@ Deno.serve(async (req) => {
 
   const c = order.profiles as any;
   const rows = (order.order_items as any[])
-    .map((i) => `<tr><td>${esc(i.product_name)}</td><td>${i.quantity} ${unitLabel[i.unit]}</td><td>${fmtEuro(i.unit_price * i.quantity)}</td></tr>`)
+    .map((i) => `<tr><td>${esc(i.product_name)}</td><td>${i.quantity} ${unitLabel[i.unit]}</td><td>${fmtEuro(i.unit_price)}/${unitLabel[i.unit]}</td></tr>`)
     .join("");
 
   // Ordine scritto o con foto: niente righe, il prezzo lo fa il titolare.
@@ -50,9 +50,8 @@ Deno.serve(async (req) => {
     ${order.body ? `<p style="white-space:pre-wrap">${esc(order.body)}</p>` : ""}
     ${photoLink}
     ${isFree ? "" : `<table border="1" cellpadding="6" cellspacing="0">
-      <tr><th>Prodotto</th><th>Quantità</th><th>Importo stimato</th></tr>${rows}
-    </table>
-    <p><b>Totale stimato: ${fmtEuro(order.total)}</b></p>`}
+      <tr><th>Prodotto</th><th>Quantità</th><th>Prezzo</th></tr>${rows}
+    </table>`}
     ${order.note ? `<p>Note: ${esc(order.note)}</p>` : ""}`;
 
   const res = await fetch("https://api.resend.com/emails", {

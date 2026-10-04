@@ -27,7 +27,7 @@ class _CartScreenState extends State<CartScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Inviare l\'ordine?'),
-        content: Text('${cart.count} prodotti, totale stimato ${euro(cart.total)}.\nIl pagamento si concorda alla consegna.'),
+        content: Text('${cart.count} prodotti.\nPesi e importo finale li conferma il magazzino.'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annulla')),
           FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Invia')),
@@ -69,7 +69,7 @@ class _CartScreenState extends State<CartScreen> {
               for (final l in cart.lines) ...[
                 ListTile(
                   title: Text(l.product.name),
-                  subtitle: Text('${pricePerUnit(l.product.price, l.product.unit)} · ${euro(l.subtotal)}'),
+                  subtitle: Text(pricePerUnit(l.product.price, l.product.unit)),
                   trailing: QuantityStepper(product: l.product),
                 ),
                 const Divider(height: 1),
@@ -96,19 +96,12 @@ class _CartScreenState extends State<CartScreen> {
           : SafeArea(
               child: Padding(
                 padding: const EdgeInsets.all(16),
-                child: Row(children: [
-                  Expanded(
-                    child: Column(mainAxisSize: MainAxisSize.min, crossAxisAlignment: CrossAxisAlignment.start, children: [
-                      const Text('Totale stimato'),
-                      Text(euro(cart.total), style: Theme.of(context).textTheme.titleLarge),
-                    ]),
-                  ),
-                  FilledButton.icon(
-                    onPressed: _busy ? null : () => _send(cart),
-                    icon: const Icon(Icons.send),
-                    label: const Text('Invia ordine'),
-                  ),
-                ]),
+                // Niente totale: pesi e importo effettivi li stabilisce il magazzino.
+                child: FilledButton.icon(
+                  onPressed: _busy ? null : () => _send(cart),
+                  icon: const Icon(Icons.send),
+                  label: const Text('Invia ordine'),
+                ),
               ),
             ),
     );
