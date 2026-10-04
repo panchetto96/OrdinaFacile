@@ -107,6 +107,9 @@ class Repo {
     return rows.map(Profile.fromMap).toList();
   }
 
+  Future<void> setCustomerApproved(String customerId, bool approved) =>
+      db.rpc('set_customer_approved', params: {'p_customer': customerId, 'p_approved': approved});
+
   /// productId -> prezzo riservato al cliente.
   Future<Map<int, double>> customerPrices(String customerId) async {
     final rows = await db.from('customer_prices').select('product_id, price').eq('customer_id', customerId);

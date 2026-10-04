@@ -1,8 +1,9 @@
 -- Approvazione dei nuovi clienti: chi si registra non vede prezzi e non ordina
 -- finché il titolare non lo abilita dalla scheda Clienti.
-alter table public.profiles add column approved boolean not null default false;
--- Gli account già esistenti (titolare e clienti di prova) restano abilitati.
-update public.profiles set approved = true;
+-- Gli account già esistenti (titolare e clienti di prova) restano abilitati:
+-- prendono true quando la colonna viene aggiunta, i nuovi partono da false.
+alter table public.profiles add column approved boolean not null default true;
+alter table public.profiles alter column approved set default false;
 
 create or replace function public.is_approved()
 returns boolean language sql stable security definer set search_path = public as $$
@@ -23,18 +24,12 @@ $$;
 revoke execute on function public.protect_role() from public, anon, authenticated;
 
 -- Listino e prezzi riservati: solo per clienti approvati (e titolare).
-drop policy "prodotti: lettura utenti registrati" on public.products;
-create policy "prodotti: lettura clienti approvati" on public.products
-  for select to authenticated using (public.is_approved());
-
-drop policy "prezzi cliente: lettura propri o admin" on public.customer_prices;
-create policy "prezzi cliente: lettura propri o admin" on public.customer_prices
-  for select to authenticated using ((customer_id = auth.uid() and public.is_approved()) or public.is_admin());
+alter policy "prodotti: lettura utenti registrati" on public.products using (public.is_approved());
+alter policy "prezzi cliente: lettura propri o admin" on public.customer_prices
+  using ((customer_id = auth.uid() and public.is_approved()) or public.is_admin());
 
 -- Foto ordini: caricamento solo da clienti approvati.
-drop policy "foto ordini: caricamento nella propria cartella" on storage.objects;
-create policy "foto ordini: caricamento nella propria cartella" on storage.objects
-  for insert to authenticated
+alter policy "foto ordini: caricamento nella propria cartella" on storage.objects
   with check (bucket_id = 'ordini-foto' and (storage.foldername(name))[1] = auth.uid()::text and public.is_approved());
 
 -- Invio ordini: stesso controllo dentro le funzioni (girano come security definer).

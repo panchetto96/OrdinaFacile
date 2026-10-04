@@ -52,7 +52,41 @@ class _RoleRouterState extends State<_RoleRouter> {
       body: AsyncView<Profile>(
         future: _profile,
         onRetry: () => setState(() => _profile = context.read<Repo>().myProfile()),
-        builder: (p) => p.isAdmin ? AdminHome(profile: p) : CustomerHome(profile: p),
+        builder: (p) => p.isAdmin
+            ? AdminHome(profile: p)
+            : p.approved
+                ? CustomerHome(profile: p)
+                : _PendingApproval(onRetry: () => setState(() => _profile = context.read<Repo>().myProfile())),
+      ),
+    );
+  }
+}
+
+/// Cliente appena registrato: niente prezzi né ordini finché il titolare non lo abilita.
+class _PendingApproval extends StatelessWidget {
+  const _PendingApproval({required this.onRetry});
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.stretch, children: [
+          Icon(Icons.hourglass_top, size: 64, color: theme.colorScheme.primary),
+          const SizedBox(height: 16),
+          Text('In attesa di approvazione', style: theme.textTheme.headlineSmall, textAlign: TextAlign.center),
+          const SizedBox(height: 12),
+          const Text(
+            'Il tuo account è stato creato. Appena il magazzino lo abilita potrai vedere il listino e mandare ordini.',
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          FilledButton.icon(onPressed: onRetry, icon: const Icon(Icons.refresh), label: const Text('Controlla di nuovo')),
+          const SizedBox(height: 8),
+          TextButton(onPressed: () => context.read<Repo>().signOut(), child: const Text('Esci')),
+        ]),
       ),
     );
   }

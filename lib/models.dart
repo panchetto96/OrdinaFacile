@@ -47,6 +47,7 @@ class Profile {
     required this.address,
     required this.phone,
     required this.role,
+    this.approved = true,
   });
 
   final String id;
@@ -56,6 +57,9 @@ class Profile {
   final String address;
   final String phone;
   final String role;
+
+  /// I nuovi clienti restano in attesa finché il titolare non li abilita.
+  final bool approved;
 
   bool get isAdmin => role == 'admin';
   String get displayName => businessName.isNotEmpty ? businessName : username;
@@ -68,6 +72,7 @@ class Profile {
         address: m['address'] as String? ?? '',
         phone: m['phone'] as String? ?? '',
         role: m['role'] as String? ?? 'customer',
+        approved: m['approved'] as bool? ?? true,
       );
 }
 
