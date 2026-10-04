@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../format.dart';
 import '../models.dart';
 import '../repo.dart';
+import '../ui.dart';
 
 /// Ordine espandibile con l'elenco dei prodotti. [trailing] e [footer] per le azioni del titolare.
 class OrderTile extends StatelessWidget {
@@ -61,9 +63,37 @@ class OrderTile extends StatelessWidget {
             const SizedBox(height: 8),
             Text('Note: ${order.note}', style: const TextStyle(fontStyle: FontStyle.italic)),
           ],
+          if (order.invoice != null) ...[
+            const SizedBox(height: 8),
+            InvoiceButton(invoice: order.invoice!),
+          ],
           if (footer != null) ...[const SizedBox(height: 8), footer!],
         ],
       ),
+    );
+  }
+}
+
+/// Apre il PDF della fattura nel browser o nel lettore PDF del telefono.
+class InvoiceButton extends StatelessWidget {
+  const InvoiceButton({super.key, required this.invoice});
+  final Invoice invoice;
+
+  Future<void> _open(BuildContext context) async {
+    try {
+      final url = await context.read<Repo>().invoiceUrl(invoice.filePath);
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    } catch (e) {
+      if (context.mounted) showError(context, e);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return OutlinedButton.icon(
+      onPressed: () => _open(context),
+      icon: const Icon(Icons.picture_as_pdf),
+      label: Text(invoice.label),
     );
   }
 }

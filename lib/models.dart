@@ -102,6 +102,7 @@ class Order {
     required this.items,
     this.body = '',
     this.photoPath,
+    this.invoice,
     this.customer,
   });
 
@@ -117,6 +118,9 @@ class Order {
 
   /// Foto dell'ordine nello spazio privato `ordini-foto`, se allegata.
   final String? photoPath;
+
+  /// Fattura allegata dal titolare (può coprire più ordini).
+  final Invoice? invoice;
   final Profile? customer;
 
   /// Ordine scritto o con foto: niente righe né totale, il prezzo lo fa il titolare.
@@ -130,8 +134,29 @@ class Order {
         createdAt: DateTime.parse(m['created_at'] as String),
         body: m['body'] as String? ?? '',
         photoPath: m['photo_path'] as String?,
+        invoice: m['invoices'] == null ? null : Invoice.fromMap(m['invoices'] as Map<String, dynamic>),
         items: [for (final i in (m['order_items'] as List? ?? [])) OrderItem.fromMap(i as Map<String, dynamic>)],
         customer: m['profiles'] == null ? null : Profile.fromMap(m['profiles'] as Map<String, dynamic>),
+      );
+}
+
+class Invoice {
+  Invoice({required this.id, required this.number, required this.filePath, required this.createdAt});
+
+  final int id;
+  final String number;
+
+  /// PDF nello spazio privato `fatture`, cartella del cliente.
+  final String filePath;
+  final DateTime createdAt;
+
+  String get label => number.isEmpty ? 'Fattura' : 'Fattura n. $number';
+
+  factory Invoice.fromMap(Map<String, dynamic> m) => Invoice(
+        id: m['id'] as int,
+        number: m['number'] as String? ?? '',
+        filePath: m['file_path'] as String,
+        createdAt: DateTime.parse(m['created_at'] as String),
       );
 }
 
