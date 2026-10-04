@@ -10,8 +10,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
@@ -23,11 +23,8 @@ jobs:
       - run: flutter analyze
       - run: flutter test
       - name: Build APK
-        run: >
-          flutter build apk --release --build-name=1.0.0 --build-number=${{ github.run_number }}
-          --dart-define=SUPABASE_URL=${{ vars.SUPABASE_URL }}
-          --dart-define=SUPABASE_KEY=${{ vars.SUPABASE_KEY }}
-      - uses: actions/upload-artifact@v4
+        run: flutter build apk --release --build-name=1.0.0 --build-number=${{ github.run_number }}
+      - uses: actions/upload-artifact@v5
         with:
           name: OrdinaFacile-apk
           path: build/app/outputs/flutter-apk/app-release.apk

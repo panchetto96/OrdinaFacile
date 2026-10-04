@@ -24,17 +24,15 @@ gli ordini dalla stessa app. Nessun pagamento passa dall'app.
 
 ## Messa in funzione
 
-1. **Supabase**: crea un progetto gratuito su supabase.com ed esegui
-   `supabase/migrations/0001_init.sql` nell'SQL Editor.
+1. **Supabase**: progetto `OrdinaFacile` già creato, con le migrazioni di
+   `supabase/migrations/` applicate. URL e chiave publishable sono in `lib/config.dart`.
 2. **Titolare**: registrati dall'app, poi nell'SQL Editor:
    `update profiles set role = 'admin' where username = 'NOME_UTENTE';`
 3. **Avviso email**: crea una chiave su resend.com, poi
    - pubblica la funzione: `supabase functions deploy notify-order`
    - imposta i segreti `RESEND_API_KEY`, `ORDER_EMAIL_TO`, `ORDER_EMAIL_FROM`
    - in Database → Webhooks crea un webhook su INSERT di `orders` verso la funzione.
-4. **APK**: nel repository GitHub, Settings → Secrets and variables → Actions → Variables,
-   aggiungi `SUPABASE_URL` e `SUPABASE_KEY` (la chiave *publishable* del progetto).
-   Ogni push su `main` genera l'APK, scaricabile dalla pagina della run in Actions.
+4. **APK**: ogni push su `main` genera l'APK, scaricabile dalla pagina della run in Actions.
 
 ## Formato del catalogo
 
