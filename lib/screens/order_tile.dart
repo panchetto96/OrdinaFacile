@@ -29,7 +29,7 @@ class OrderTile extends StatelessWidget {
       child: ExpansionTile(
         shape: const Border(),
         title: Text(showCustomer && c != null ? c.displayName : 'Ordine #${order.id}'),
-        subtitle: Text('${showCustomer ? '#${order.id} · ' : ''}${dateTime(order.createdAt)} · ${order.isFree ? _freeLabel : euro(order.total)}'),
+        subtitle: Text('${showCustomer ? '#${order.id} · ' : ''}${dateTime(order.createdAt)} · ${order.isFree ? _freeLabel : '${order.items.length} prodotti'}'),
         trailing: Chip(
           label: Text(statusLabel(order.status)),
           labelStyle: TextStyle(color: statusColor),
@@ -54,7 +54,7 @@ class OrderTile extends StatelessWidget {
               child: Row(children: [
                 Expanded(child: Text(i.productName)),
                 Text('${qty(i.quantity)} ${unitShort(i.unit)}'),
-                SizedBox(width: 90, child: Text(euro(i.subtotal), textAlign: TextAlign.right)),
+                SizedBox(width: 100, child: Text(pricePerUnit(i.unitPrice, i.unit), textAlign: TextAlign.right)),
               ]),
             ),
           if (order.note.isNotEmpty) ...[
