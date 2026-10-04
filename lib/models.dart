@@ -122,12 +122,11 @@ class Order {
       );
 }
 
-const orderStatuses = ['nuovo', 'preparato', 'consegnato', 'annullato'];
+const orderStatuses = ['nuovo', 'visto', 'annullato'];
 
 String statusLabel(String s) => switch (s) {
       'nuovo' => 'Nuovo',
-      'preparato' => 'Preparato',
-      'consegnato' => 'Consegnato',
+      'visto' => 'Visto',
       'annullato' => 'Annullato',
       _ => s,
     };

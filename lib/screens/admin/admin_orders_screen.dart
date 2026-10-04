@@ -54,7 +54,6 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text('Annullare l\'ordine #${o.id}?'),
-        content: const Text('Potrai riaprirlo dalla scheda Annullati.'),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('No')),
           FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Annulla ordine')),
@@ -66,34 +65,21 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
 
   /// Etichetta del filtro in cui finisce un ordine con questo stato.
   static String _filterLabel(String status) => switch (status) {
-        'nuovo' => 'Da preparare',
-        'preparato' => 'Da consegnare',
-        'consegnato' => 'Consegnati',
+        'nuovo' => 'Nuovi',
+        'visto' => 'Visti',
         _ => 'Annullati',
       };
 
-  /// Azioni per lo stato attuale: il passo successivo in evidenza, poi annulla o riapri.
-  Widget _actions(Order o) {
-    final next = switch (o.status) {
-      'nuovo' => 'preparato',
-      'preparato' => 'consegnato',
-      _ => null,
-    };
+  /// Solo per gli ordini nuovi: "Annulla" e "Segna come visto".
+  Widget? _actions(Order o) {
+    if (o.status != 'nuovo') return null;
     return Wrap(spacing: 8, runSpacing: 4, alignment: WrapAlignment.end, children: [
-      if (next == null)
-        TextButton.icon(
-          onPressed: () => _setStatus(o, 'nuovo'),
-          icon: const Icon(Icons.undo),
-          label: const Text('Riapri'),
-        )
-      else ...[
-        TextButton(onPressed: () => _cancel(o), child: const Text('Annulla ordine')),
-        FilledButton.icon(
-          onPressed: () => _setStatus(o, next),
-          icon: const Icon(Icons.check),
-          label: Text(next == 'preparato' ? 'Preparato' : 'Consegnato'),
-        ),
-      ],
+      TextButton(onPressed: () => _cancel(o), child: const Text('Annulla')),
+      FilledButton.icon(
+        onPressed: () => _setStatus(o, 'visto'),
+        icon: const Icon(Icons.check),
+        label: const Text('Segna come visto'),
+      ),
     ]);
   }
 
