@@ -7,7 +7,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'config.dart';
 
-/// File pubblicato dalla CI a ogni build di main (vedi .github/workflows/build-apk.yml).
+/// Per ora la CI non pubblica version.json (Matteo distribuisce l'APK a mano):
+/// finché il file non esiste il controllo non mostra nulla.
 final versionUrl = Uri.parse('$supabaseUrl/storage/v1/object/public/app/version.json');
 
 class AppVersion {
