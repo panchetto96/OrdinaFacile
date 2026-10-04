@@ -1,0 +1,55 @@
+import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+/// Messaggio d'errore leggibile per l'utente.
+String errorText(Object e) => switch (e) {
+      AuthException(:final message) => _authMessage(message),
+      PostgrestException(:final message) => message,
+      _ => 'Qualcosa è andato storto. Controlla la connessione e riprova.',
+    };
+
+String _authMessage(String m) {
+  final l = m.toLowerCase();
+  if (l.contains('invalid login')) return 'Email/nome utente o password errati';
+  if (l.contains('already registered')) return 'Esiste già un account con questa email';
+  if (l.contains('email not confirmed')) return 'Conferma prima l\'email cliccando il link che ti abbiamo inviato';
+  if (l.contains('password')) return 'La password deve avere almeno 6 caratteri';
+  return m;
+}
+
+void showError(BuildContext context, Object e) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(errorText(e))));
+}
+
+void showMessage(BuildContext context, String text) {
+  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(text)));
+}
+
+/// Mostra caricamento / errore / contenuto per un Future ricaricabile.
+class AsyncView<T> extends StatelessWidget {
+  const AsyncView({super.key, required this.future, required this.builder, required this.onRetry});
+
+  final Future<T> future;
+  final Widget Function(T data) builder;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<T>(
+      future: future,
+      builder: (context, snap) {
+        if (snap.hasError) {
+          return Center(
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Text(errorText(snap.error!), textAlign: TextAlign.center),
+              const SizedBox(height: 12),
+              FilledButton(onPressed: onRetry, child: const Text('Riprova')),
+            ]),
+          );
+        }
+        if (!snap.hasData) return const Center(child: CircularProgressIndicator());
+        return builder(snap.data as T);
+      },
+    );
+  }
+}
