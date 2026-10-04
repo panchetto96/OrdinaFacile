@@ -44,3 +44,26 @@ jobs:
         with:
           name: OrdinaFacile-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+      - name: Publish update for the in-app notice
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        env:
+          SUPABASE_URL: https://stknnostvolacmuyvydk.supabase.co
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          BUILD: ${{ github.run_number }}
+        run: |
+          if [ -z "$SUPABASE_SECRET_KEY" ]; then
+            echo "::warning::Secret SUPABASE_SECRET_KEY mancante: l'APK non viene pubblicato per l'avviso di aggiornamento."
+            exit 0
+          fi
+          auth=(-H "apikey: $SUPABASE_SECRET_KEY")
+          # Le chiavi legacy (JWT) vanno anche nell'header Authorization, le nuove sb_secret_ no.
+          case "$SUPABASE_SECRET_KEY" in sb_*) ;; *) auth+=(-H "Authorization: Bearer $SUPABASE_SECRET_KEY") ;; esac
+          apk="OrdinaFacile-$BUILD.apk"
+          curl -sSf -X POST "$SUPABASE_URL/storage/v1/object/app/$apk" "${auth[@]}" \
+            -H "x-upsert: true" -H "Content-Type: application/vnd.android.package-archive" \
+            --data-binary @build/app/outputs/flutter-apk/app-release.apk
+          printf '{"build": %s, "name": "1.0.0 (%s)", "url": "%s/storage/v1/object/public/app/%s"}' \
+            "$BUILD" "$BUILD" "$SUPABASE_URL" "$apk" > version.json
+          curl -sSf -X POST "$SUPABASE_URL/storage/v1/object/app/version.json" "${auth[@]}" \
+            -H "x-upsert: true" -H "Content-Type: application/json" -H "cache-control: max-age=60" \
+            --data-binary @version.json
