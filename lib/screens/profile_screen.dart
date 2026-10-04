@@ -35,6 +35,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _deleteAccount() async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Eliminare il tuo account?'),
+        content: const Text(
+          'Nome attività, indirizzo, telefono ed email verranno cancellati e non potrai più accedere. '
+          'Gli ordini e le fatture già fatti restano al magazzino, senza i tuoi dati, perché servono per la contabilità.',
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Annulla')),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Theme.of(ctx).colorScheme.error),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Elimina'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    try {
+      await context.read<Repo>().deleteMyAccount();
+    } catch (e) {
+      if (mounted) showError(context, e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final p = widget.profile;
@@ -64,6 +91,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 20),
           FilledButton(onPressed: _busy ? null : _save, child: const Text('Salva')),
+          if (!p.isAdmin) ...[
+            const SizedBox(height: 40),
+            TextButton.icon(
+              onPressed: _busy ? null : _deleteAccount,
+              icon: const Icon(Icons.delete_forever),
+              label: const Text('Elimina il mio account'),
+              style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+            ),
+          ],
         ]),
       ),
     );
