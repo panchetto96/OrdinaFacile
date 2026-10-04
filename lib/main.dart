@@ -12,6 +12,10 @@ import 'screens/auth_gate.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('it_IT');
+  if (supabaseUrl.isEmpty || supabaseKey.isEmpty) {
+    runApp(const _NotConfiguredApp());
+    return;
+  }
   await Supabase.initialize(url: supabaseUrl, publishableKey: supabaseKey);
   runApp(
     MultiProvider(
@@ -45,6 +49,30 @@ class OrdinaFacileApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       home: const AuthGate(),
+    );
+  }
+}
+
+/// Mostrato quando l'APK è stato generato senza SUPABASE_URL / SUPABASE_KEY.
+class _NotConfiguredApp extends StatelessWidget {
+  const _NotConfiguredApp();
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: Center(
+          child: Padding(
+            padding: EdgeInsets.all(32),
+            child: Text(
+              'App non ancora collegata al database.\n\n'
+              'Imposta SUPABASE_URL e SUPABASE_KEY nelle variabili del repository GitHub e rigenera l\'APK.',
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
