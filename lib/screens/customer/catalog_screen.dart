@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../cart.dart';
 import '../../format.dart';
 import '../../models.dart';
 import '../../repo.dart';
@@ -8,7 +9,12 @@ import '../../ui.dart';
 import 'quantity_stepper.dart';
 
 class CatalogScreen extends StatefulWidget {
-  const CatalogScreen({super.key});
+  const CatalogScreen({super.key, this.ordering = false, this.onOpenCart});
+
+  /// true se il cliente è entrato da "Aggiungi ordine dal listino": mostra i
+  /// pulsanti per aggiungere. Altrimenti il listino è solo da consultare.
+  final bool ordering;
+  final VoidCallback? onOpenCart;
 
   @override
   State<CatalogScreen> createState() => _CatalogScreenState();
@@ -36,7 +42,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Catalogo'),
+        title: Text(widget.ordering ? 'Aggiungi dal listino' : 'Listino prezzi'),
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(64),
           child: Padding(
@@ -50,6 +56,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
           ),
         ),
       ),
+      floatingActionButton: widget.ordering ? _cartButton() : null,
       body: AsyncView<List<Product>>(
         future: _products,
         onRetry: () => setState(_load),
@@ -79,6 +86,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                         Padding(padding: EdgeInsets.all(32), child: Center(child: Text('Nessun prodotto trovato'))),
                       ])
                     : ListView.separated(
+                        padding: EdgeInsets.only(bottom: widget.ordering ? 88 : 0),
                         itemCount: shown.length,
                         separatorBuilder: (_, _) => const Divider(height: 1),
                         itemBuilder: (_, i) {
@@ -98,7 +106,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                   style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600),
                                 ),
                             ])),
-                            trailing: QuantityStepper(product: p),
+                            trailing: widget.ordering ? QuantityStepper(product: p) : null,
                           ));
                         },
                       ),
@@ -107,6 +115,16 @@ class _CatalogScreenState extends State<CatalogScreen> {
           ]);
         },
       ),
+    );
+  }
+
+  Widget? _cartButton() {
+    final count = context.select<Cart, int>((c) => c.count);
+    if (count == 0) return null;
+    return FloatingActionButton.extended(
+      onPressed: widget.onOpenCart,
+      icon: const Icon(Icons.shopping_cart),
+      label: Text('Vai al carrello ($count)'),
     );
   }
 

@@ -60,7 +60,7 @@ class MyOrdersScreenState extends State<MyOrdersScreen> {
                   for (final o in orders)
                     OrderTile(
                       order: o,
-                      footer: Align(
+                      footer: o.isFree ? null : Align(
                         alignment: Alignment.centerRight,
                         child: FilledButton.tonalIcon(
                           onPressed: () => _reorder(o),

@@ -100,6 +100,8 @@ class Order {
     required this.total,
     required this.createdAt,
     required this.items,
+    this.body = '',
+    this.photoPath,
     this.customer,
   });
 
@@ -109,7 +111,16 @@ class Order {
   final double total;
   final DateTime createdAt;
   final List<OrderItem> items;
+
+  /// Ordine scritto a mano dal cliente (vuoto per gli ordini dal listino).
+  final String body;
+
+  /// Foto dell'ordine nello spazio privato `ordini-foto`, se allegata.
+  final String? photoPath;
   final Profile? customer;
+
+  /// Ordine scritto o con foto: niente righe né totale, il prezzo lo fa il titolare.
+  bool get isFree => items.isEmpty && (body.isNotEmpty || photoPath != null);
 
   factory Order.fromMap(Map<String, dynamic> m) => Order(
         id: m['id'] as int,
@@ -117,6 +128,8 @@ class Order {
         note: m['note'] as String? ?? '',
         total: (m['total'] as num).toDouble(),
         createdAt: DateTime.parse(m['created_at'] as String),
+        body: m['body'] as String? ?? '',
+        photoPath: m['photo_path'] as String?,
         items: [for (final i in (m['order_items'] as List? ?? [])) OrderItem.fromMap(i as Map<String, dynamic>)],
         customer: m['profiles'] == null ? null : Profile.fromMap(m['profiles'] as Map<String, dynamic>),
       );

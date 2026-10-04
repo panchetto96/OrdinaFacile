@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../format.dart';
 import '../models.dart';
+import '../repo.dart';
 
 /// Ordine espandibile con l'elenco dei prodotti. [trailing] e [footer] per le azioni del titolare.
 class OrderTile extends StatelessWidget {
@@ -10,6 +12,8 @@ class OrderTile extends StatelessWidget {
   final Order order;
   final bool showCustomer;
   final Widget? footer;
+
+  String get _freeLabel => order.photoPath != null ? 'Ordine con foto' : 'Ordine scritto';
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +29,7 @@ class OrderTile extends StatelessWidget {
       child: ExpansionTile(
         shape: const Border(),
         title: Text(showCustomer && c != null ? c.displayName : 'Ordine #${order.id}'),
-        subtitle: Text('${showCustomer ? '#${order.id} · ' : ''}${dateTime(order.createdAt)} · ${euro(order.total)}'),
+        subtitle: Text('${showCustomer ? '#${order.id} · ' : ''}${dateTime(order.createdAt)} · ${order.isFree ? _freeLabel : euro(order.total)}'),
         trailing: Chip(
           label: Text(statusLabel(order.status)),
           labelStyle: TextStyle(color: statusColor),
@@ -39,6 +43,11 @@ class OrderTile extends StatelessWidget {
             Text('${c.address}\nTel. ${c.phone}'),
             const SizedBox(height: 8),
           ],
+          if (order.body.isNotEmpty) ...[
+            SelectableText(order.body, style: Theme.of(context).textTheme.bodyLarge),
+            const SizedBox(height: 8),
+          ],
+          if (order.photoPath != null) _OrderPhoto(path: order.photoPath!),
           for (final i in order.items)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 2),
@@ -55,6 +64,52 @@ class OrderTile extends StatelessWidget {
           if (footer != null) ...[const SizedBox(height: 8), footer!],
         ],
       ),
+    );
+  }
+}
+
+/// Anteprima della foto dell'ordine; toccandola si apre a schermo intero con lo zoom.
+class _OrderPhoto extends StatefulWidget {
+  const _OrderPhoto({required this.path});
+  final String path;
+
+  @override
+  State<_OrderPhoto> createState() => _OrderPhotoState();
+}
+
+class _OrderPhotoState extends State<_OrderPhoto> {
+  late final Future<String> _url = context.read<Repo>().photoUrl(widget.path);
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String>(
+      future: _url,
+      builder: (context, snap) {
+        if (snap.hasError) return const Text('Foto non disponibile');
+        if (!snap.hasData) return const SizedBox(height: 160, child: Center(child: CircularProgressIndicator()));
+        final url = snap.data!;
+        return GestureDetector(
+          onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => _FullPhoto(url: url))),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.network(url, height: 240, width: double.infinity, fit: BoxFit.cover),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _FullPhoto extends StatelessWidget {
+  const _FullPhoto({required this.url});
+  final String url;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      appBar: AppBar(backgroundColor: Colors.black, foregroundColor: Colors.white),
+      body: InteractiveViewer(maxScale: 5, child: Center(child: Image.network(url))),
     );
   }
 }

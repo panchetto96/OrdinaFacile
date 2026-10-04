@@ -16,7 +16,7 @@ gli ordini dalla stessa app. Nessun pagamento passa dall'app.
 | Percorso | Contenuto |
 | --- | --- |
 | `lib/screens/auth/` | Accesso (email o nome utente) e registrazione con profilo attività |
-| `lib/screens/customer/` | Catalogo, carrello, i miei ordini |
+| `lib/screens/customer/` | Home con 4 scelte (scrivi, foto, ordina dal listino, consulta il listino), catalogo, carrello, i miei ordini |
 | `lib/screens/admin/` | Ordini in arrivo (tempo reale, cambio stato), gestione catalogo e import Excel/CSV, clienti e prezzi riservati |
 | `lib/catalog_import.dart` | Lettura del catalogo da `.xlsx` o `.csv` |
 | `supabase/migrations/0001_init.sql` | Tabelle, regole di sicurezza (RLS), funzione `place_order` |

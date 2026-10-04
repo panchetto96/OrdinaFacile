@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'models.dart';
@@ -132,6 +134,24 @@ class Repo {
     });
     return id as int;
   }
+
+  /// Ordine scritto a mano e/o con foto. La foto va nella cartella del cliente.
+  Future<int> placeFreeOrder({String body = '', Uint8List? photo, String photoExt = 'jpg', String note = ''}) async {
+    String? path;
+    if (photo != null) {
+      final ext = photoExt.toLowerCase();
+      path = '${db.auth.currentUser!.id}/${DateTime.now().millisecondsSinceEpoch}.$ext';
+      await db.storage.from(photoBucket).uploadBinary(path, photo,
+          fileOptions: FileOptions(contentType: ext == 'png' ? 'image/png' : ext == 'webp' ? 'image/webp' : ext == 'heic' ? 'image/heic' : 'image/jpeg'));
+    }
+    final id = await db.rpc('place_free_order', params: {'p_body': body.trim(), 'p_photo_path': path, 'p_note': note.trim()});
+    return id as int;
+  }
+
+  static const photoBucket = 'ordini-foto';
+
+  /// Link temporaneo per vedere la foto di un ordine.
+  Future<String> photoUrl(String path) => db.storage.from(photoBucket).createSignedUrl(path, 3600);
 
   /// Per il cliente RLS restituisce solo i suoi ordini, per il titolare tutti.
   Future<List<Order>> orders({String? status}) async {
