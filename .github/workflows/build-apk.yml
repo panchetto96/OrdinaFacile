@@ -22,6 +22,22 @@ jobs:
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test
+      - name: Prepare signing key
+        env:
+          KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        run: |
+          if [ -z "$KEYSTORE_BASE64" ]; then
+            echo "::warning::Secret ANDROID_KEYSTORE_BASE64 mancante: APK firmato con chiave di debug, gli aggiornamenti non si installeranno sopra la versione precedente."
+            exit 0
+          fi
+          echo "$KEYSTORE_BASE64" | base64 -d > android/upload-keystore.jks
+          cat > android/key.properties <<EOF
+          storeFile=upload-keystore.jks
+          storePassword=$KEYSTORE_PASSWORD
+          keyAlias=ordinafacile
+          keyPassword=$KEYSTORE_PASSWORD
+          EOF
       - name: Build APK
         run: flutter build apk --release --build-name=1.0.0 --build-number=${{ github.run_number }}
       - uses: actions/upload-artifact@v5
