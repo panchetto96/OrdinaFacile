@@ -1,4 +1,4 @@
-# list&check
+# OrdinaFacile
 
 App Android per gli ordini dei clienti di un magazzino all'ingrosso alimentare.
 I clienti si registrano, sfogliano il catalogo (filtri per categoria e ricerca),

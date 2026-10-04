@@ -3,9 +3,9 @@ import 'dart:typed_data';
 
 import 'package:excel/excel.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:listcheck/cart.dart';
-import 'package:listcheck/catalog_import.dart';
-import 'package:listcheck/models.dart';
+import 'package:ordinafacile/cart.dart';
+import 'package:ordinafacile/catalog_import.dart';
+import 'package:ordinafacile/models.dart';
 
 Uint8List csv(String s) => Uint8List.fromList(utf8.encode(s));
 

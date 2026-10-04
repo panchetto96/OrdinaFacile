@@ -19,18 +19,18 @@ Future<void> main() async {
         Provider(create: (_) => Repo(Supabase.instance.client)),
         ChangeNotifierProvider(create: (_) => Cart()),
       ],
-      child: const ListCheckApp(),
+      child: const OrdinaFacileApp(),
     ),
   );
 }
 
-class ListCheckApp extends StatelessWidget {
-  const ListCheckApp({super.key});
+class OrdinaFacileApp extends StatelessWidget {
+  const OrdinaFacileApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'list&check',
+      title: 'OrdinaFacile',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         colorSchemeSeed: const Color(0xFF2E7D32),

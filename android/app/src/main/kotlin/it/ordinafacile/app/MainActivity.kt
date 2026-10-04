@@ -1,4 +1,4 @@
-package it.listcheck.listcheck
+package it.ordinafacile.app
 
 import io.flutter.embedding.android.FlutterActivity
 

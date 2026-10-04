@@ -42,7 +42,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [
                 Icon(Icons.checklist_rtl, size: 72, color: Theme.of(context).colorScheme.primary),
                 const SizedBox(height: 8),
-                Text('list&check', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineMedium),
+                Text('OrdinaFacile', textAlign: TextAlign.center, style: Theme.of(context).textTheme.headlineMedium),
                 const SizedBox(height: 32),
                 TextFormField(
                   controller: _login,
