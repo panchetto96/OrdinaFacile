@@ -72,8 +72,10 @@ class Profile {
 }
 
 class OrderItem {
-  OrderItem({required this.productName, required this.unit, required this.unitPrice, required this.quantity});
+  OrderItem({this.productId, required this.productName, required this.unit, required this.unitPrice, required this.quantity});
 
+  /// null se nel frattempo il prodotto è stato eliminato dal catalogo.
+  final int? productId;
   final String productName;
   final String unit;
   final double unitPrice;
@@ -82,6 +84,7 @@ class OrderItem {
   double get subtotal => unitPrice * quantity;
 
   factory OrderItem.fromMap(Map<String, dynamic> m) => OrderItem(
+        productId: m['product_id'] as int?,
         productName: m['product_name'] as String,
         unit: m['unit'] as String,
         unitPrice: (m['unit_price'] as num).toDouble(),

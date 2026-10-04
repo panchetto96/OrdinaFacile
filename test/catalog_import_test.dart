@@ -72,4 +72,17 @@ void main() {
     expect(cart.count, 1);
     expect(cart.total, 10);
   });
+
+  test('riordina: prezzi di oggi, salta i prodotti non disponibili', () {
+    final salame = Product(id: 1, name: 'Salame', category: 'S', price: 2.0, unit: 'etto', available: true);
+    final cart = Cart();
+    final missing = cart.reorder([
+      OrderItem(productId: 1, productName: 'Salame', unit: 'etto', unitPrice: 2.5, quantity: 3),
+      OrderItem(productId: 2, productName: 'Olive', unit: 'kg', unitPrice: 6.9, quantity: 1),
+      OrderItem(productName: 'Prodotto eliminato', unit: 'pz', unitPrice: 1, quantity: 1),
+    ], {1: salame});
+    expect(missing, ['Olive', 'Prodotto eliminato']);
+    expect(cart.quantityOf(salame), 3);
+    expect(cart.total, 6.0);
+  });
 }

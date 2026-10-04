@@ -30,7 +30,7 @@ class _CustomerHomeState extends State<CustomerHome> {
           setState(() => _tab = 2);
           _ordersKey.currentState?.reload();
         }),
-        MyOrdersScreen(key: _ordersKey),
+        MyOrdersScreen(key: _ordersKey, onReordered: () => setState(() => _tab = 1)),
         ProfileScreen(profile: widget.profile),
       ]),
       bottomNavigationBar: NavigationBar(
