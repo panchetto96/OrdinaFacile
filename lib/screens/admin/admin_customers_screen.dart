@@ -6,6 +6,7 @@ import '../../format.dart';
 import '../../models.dart';
 import '../../repo.dart';
 import '../../ui.dart';
+import 'send_invoice_screen.dart';
 
 /// Elenco clienti del titolare; da qui si aprono i prezzi riservati di ciascuno.
 class AdminCustomersScreen extends StatefulWidget {
@@ -63,7 +64,13 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
                             title: Text(c.displayName),
                             subtitle: Text('@${c.username} · ${c.phone}\n${c.address}'),
                             isThreeLine: true,
-                            trailing: const Icon(Icons.chevron_right),
+                            trailing: TextButton.icon(
+                              icon: const Icon(Icons.receipt_long),
+                              label: const Text('Fattura'),
+                              onPressed: () => Navigator.of(context).push(
+                                MaterialPageRoute(builder: (_) => SendInvoiceScreen(customer: c)),
+                              ),
+                            ),
                             onTap: () => Navigator.of(context).push(
                               MaterialPageRoute(builder: (_) => CustomerPricesScreen(customer: c)),
                             ),

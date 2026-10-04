@@ -9,7 +9,7 @@ class Repo {
   Repo(this.db);
   final SupabaseClient db;
 
-  static const _orderSelect = '*, order_items(*), profiles(*)';
+  static const _orderSelect = '*, order_items(*), profiles(*), invoices(*)';
 
   // --- Account ---------------------------------------------------------------
 
@@ -154,12 +154,32 @@ class Repo {
   Future<String> photoUrl(String path) => db.storage.from(photoBucket).createSignedUrl(path, 3600);
 
   /// Per il cliente RLS restituisce solo i suoi ordini, per il titolare tutti.
-  Future<List<Order>> orders({String? status}) async {
+  Future<List<Order>> orders({String? status, String? customerId}) async {
     var q = db.from('orders').select(_orderSelect);
     if (status != null) q = q.eq('status', status);
+    if (customerId != null) q = q.eq('customer_id', customerId);
     final rows = await q.order('created_at', ascending: false).limit(200);
     return rows.map(Order.fromMap).toList();
   }
+
+  // --- Fatture ---------------------------------------------------------------
+
+  static const invoiceBucket = 'fatture';
+
+  /// Carica il PDF nella cartella del cliente e lo collega agli ordini scelti.
+  Future<void> sendInvoice({required String customerId, required String number, required Uint8List pdf, required List<int> orderIds}) async {
+    final path = '$customerId/${DateTime.now().millisecondsSinceEpoch}.pdf';
+    await db.storage.from(invoiceBucket).uploadBinary(path, pdf, fileOptions: const FileOptions(contentType: 'application/pdf'));
+    try {
+      await db.rpc('send_invoice', params: {'p_customer': customerId, 'p_number': number.trim(), 'p_file_path': path, 'p_order_ids': orderIds});
+    } catch (_) {
+      await db.storage.from(invoiceBucket).remove([path]);
+      rethrow;
+    }
+  }
+
+  /// Link temporaneo per aprire il PDF della fattura.
+  Future<String> invoiceUrl(String path) => db.storage.from(invoiceBucket).createSignedUrl(path, 3600);
 
   /// Notifica ogni modifica alla tabella ordini (per aggiornare la lista del titolare).
   RealtimeChannel watchOrders(void Function() onChange) {
