@@ -26,7 +26,7 @@ Deno.serve(async (req) => {
   // stessa transazione, quindi qui sono già leggibili.
   const { data: order, error } = await supabase
     .from("orders")
-    .select("id, note, total, created_at, profiles(business_name, username, phone, address), order_items(product_name, unit, unit_price, quantity)")
+    .select("id, note, body, photo_path, total, created_at, profiles(business_name, username, phone, address), order_items(product_name, unit, unit_price, quantity)")
     .eq("id", orderId)
     .single();
   if (error || !order) return new Response(error?.message ?? "non trovato", { status: 500 });
@@ -36,13 +36,23 @@ Deno.serve(async (req) => {
     .map((i) => `<tr><td>${esc(i.product_name)}</td><td>${i.quantity} ${unitLabel[i.unit]}</td><td>${fmtEuro(i.unit_price * i.quantity)}</td></tr>`)
     .join("");
 
+  // Ordine scritto o con foto: niente righe, il prezzo lo fa il titolare.
+  let photoLink = "";
+  if (order.photo_path) {
+    const { data } = await supabase.storage.from("ordini-foto").createSignedUrl(order.photo_path, 7 * 24 * 3600);
+    if (data) photoLink = `<p><a href="${data.signedUrl}">Apri la foto dell'ordine</a></p>`;
+  }
+  const isFree = (order.order_items as any[]).length === 0;
+
   const html = `
     <h2>Nuovo ordine #${order.id}</h2>
     <p><b>${esc(c.business_name || c.username)}</b><br>${esc(c.address)}<br>Tel. ${esc(c.phone)}</p>
-    <table border="1" cellpadding="6" cellspacing="0">
+    ${order.body ? `<p style="white-space:pre-wrap">${esc(order.body)}</p>` : ""}
+    ${photoLink}
+    ${isFree ? "" : `<table border="1" cellpadding="6" cellspacing="0">
       <tr><th>Prodotto</th><th>Quantità</th><th>Importo stimato</th></tr>${rows}
     </table>
-    <p><b>Totale stimato: ${fmtEuro(order.total)}</b></p>
+    <p><b>Totale stimato: ${fmtEuro(order.total)}</b></p>`}
     ${order.note ? `<p>Note: ${esc(order.note)}</p>` : ""}`;
 
   const res = await fetch("https://api.resend.com/emails", {

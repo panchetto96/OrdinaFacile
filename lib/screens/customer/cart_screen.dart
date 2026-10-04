@@ -8,8 +8,11 @@ import '../../ui.dart';
 import 'quantity_stepper.dart';
 
 class CartScreen extends StatefulWidget {
-  const CartScreen({super.key, required this.onOrderSent});
+  const CartScreen({super.key, required this.onOrderSent, required this.onAddMore});
   final VoidCallback onOrderSent;
+
+  /// Torna al listino con i pulsanti per aggiungere.
+  final VoidCallback onAddMore;
 
   @override
   State<CartScreen> createState() => _CartScreenState();
@@ -61,7 +64,7 @@ class _CartScreenState extends State<CartScreen> {
         ],
       ),
       body: cart.isEmpty
-          ? const Center(child: Text('Il carrello è vuoto.\nAggiungi prodotti dal catalogo.', textAlign: TextAlign.center))
+          ? const Center(child: Text('Il carrello è vuoto.\nDalla Home scegli "Aggiungi ordine dal listino prezzi".', textAlign: TextAlign.center))
           : ListView(children: [
               for (final l in cart.lines) ...[
                 ListTile(
@@ -71,6 +74,13 @@ class _CartScreenState extends State<CartScreen> {
                 ),
                 const Divider(height: 1),
               ],
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(8, 8, 8, 0),
+                  child: TextButton.icon(onPressed: widget.onAddMore, icon: const Icon(Icons.add), label: const Text('Aggiungi altri prodotti')),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.all(16),
                 child: TextField(
