@@ -23,6 +23,17 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
 
   void _reload() => setState(() => _customers = _repo.customers());
 
+  Future<void> _setApproved(Profile c, bool approved) async {
+    try {
+      await _repo.setCustomerApproved(c.id, approved);
+      if (!mounted) return;
+      showMessage(context, approved ? '${c.displayName} può ora vedere il listino e ordinare' : '${c.displayName} sospeso');
+      _reload();
+    } catch (e) {
+      if (mounted) showError(context, e);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,9 +53,11 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
             future: _customers,
             onRetry: _reload,
             builder: (all) {
-              final shown = all
+              final matching = all
                   .where((c) => _query.isEmpty || '${c.displayName} ${c.username} ${c.address}'.toLowerCase().contains(_query))
                   .toList();
+              // Prima i clienti da approvare, poi gli altri in ordine alfabetico.
+              final shown = [...matching.where((c) => !c.approved), ...matching.where((c) => c.approved)];
               return RefreshIndicator(
                 onRefresh: () async {
                   _reload();
@@ -59,6 +72,15 @@ class _AdminCustomersScreenState extends State<AdminCustomersScreen> {
                         separatorBuilder: (_, _) => const Divider(height: 1),
                         itemBuilder: (_, i) {
                           final c = shown[i];
+                          if (!c.approved) {
+                            return ListTile(
+                              leading: const CircleAvatar(child: Icon(Icons.person_add)),
+                              title: Text(c.displayName),
+                              subtitle: Text('Da approvare · @${c.username} · ${c.phone}\n${c.email}'),
+                              isThreeLine: true,
+                              trailing: FilledButton(onPressed: () => _setApproved(c, true), child: const Text('Approva')),
+                            );
+                          }
                           return ListTile(
                             leading: const CircleAvatar(child: Icon(Icons.store)),
                             title: Text(c.displayName),
