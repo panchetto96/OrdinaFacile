@@ -39,7 +39,8 @@ jobs:
           keyPassword=$KEYSTORE_PASSWORD
           EOF
       - name: Build APK
-        run: flutter build apk --release --build-name=1.0.0 --build-number=${{ github.run_number }}
+        # Solo telefoni ARM (tutti quelli reali): senza x86_64 l'APK resta sotto il limite di 50 MB di Supabase Storage.
+        run: flutter build apk --release --target-platform android-arm,android-arm64 --build-name=1.0.0 --build-number=${{ github.run_number }}
       - uses: actions/upload-artifact@v5
         with:
           name: OrdinaFacile-apk
@@ -59,6 +60,7 @@ jobs:
           # Le chiavi legacy (JWT) vanno anche nell'header Authorization, le nuove sb_secret_ no.
           case "$SUPABASE_SECRET_KEY" in sb_*) ;; *) auth+=(-H "Authorization: Bearer $SUPABASE_SECRET_KEY") ;; esac
           apk="OrdinaFacile-$BUILD.apk"
+          ls -l build/app/outputs/flutter-apk/app-release.apk
           curl -sSf -X POST "$SUPABASE_URL/storage/v1/object/app/$apk" "${auth[@]}" \
             -H "x-upsert: true" -H "Content-Type: application/vnd.android.package-archive" \
             --data-binary @build/app/outputs/flutter-apk/app-release.apk
