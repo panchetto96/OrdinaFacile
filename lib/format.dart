@@ -12,8 +12,25 @@ String dateTime(DateTime value) => _date.format(value.toLocal());
 String unitShort(String unit) => switch (unit) {
       'kg' => 'kg',
       'etto' => 'hg',
+      'lt' => 'lt',
+      'ct' => 'ct',
       _ => 'pz',
     };
 
 /// "€ 12,50 / kg"
-String pricePerUnit(num price, String unit) => '${euro(price)} / ${unit == 'etto' ? 'etto' : unitShort(unit)}';
+String pricePerUnit(num price, String unit) => '${euro(price)} / ${unitLong(unit)}';
+
+/// Nome per esteso dell'unità, per i prezzi: "kg", "etto", "litro", "cartone", "pezzo".
+String unitLong(String unit) => switch (unit) {
+      'kg' => 'kg',
+      'etto' => 'etto',
+      'lt' => 'litro',
+      'ct' => 'cartone',
+      _ => 'pezzo',
+    };
+
+/// Unità di vendita ammesse, nell'ordine in cui il titolare le sceglie.
+const units = ['kg', 'etto', 'pz', 'lt', 'ct'];
+
+/// true per le unità che si ordinano solo a numeri interi.
+bool wholeUnit(String unit) => unit == 'pz' || unit == 'ct';

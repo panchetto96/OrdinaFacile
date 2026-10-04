@@ -43,7 +43,7 @@ catalogo e viene usato nei suoi ordini (`customer_prices`, vista `my_catalog`).
 ## Formato del catalogo
 
 Prima riga con le intestazioni (ordine libero):
-`nome; categoria; prezzo; unita (kg | etto | pz); disponibile (si/no, opzionale)`.
+`nome; categoria; prezzo; unita (kg | etto | pz | lt | ct); disponibile (si/no, opzionale)`.
 I prodotti con lo stesso nome vengono aggiornati, quelli nuovi aggiunti.
 
 ## Sviluppo

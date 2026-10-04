@@ -121,7 +121,7 @@ class _CustomerPricesScreenState extends State<CustomerPricesScreen> {
             decoration: InputDecoration(
               labelText: 'Prezzo per ${widget.customer.displayName}',
               prefixText: '€ ',
-              suffixText: '/ ${p.unit == 'etto' ? 'etto' : unitShort(p.unit)}',
+              suffixText: '/ ${unitLong(p.unit)}',
             ),
           ),
         ]),

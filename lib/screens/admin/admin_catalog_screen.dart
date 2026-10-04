@@ -146,7 +146,7 @@ class _AdminCatalogScreenState extends State<AdminCatalogScreen> {
         title: const Text('Formato del file'),
         content: const Text(
           'Usa un file Excel (.xlsx) o CSV con queste colonne nella prima riga:\n\n'
-          '• nome\n• categoria\n• prezzo (es. 12,50)\n• unita: kg, etto o pz\n• disponibile (opzionale: si/no)\n\n'
+          '• nome\n• categoria\n• prezzo (es. 12,50)\n• unita: kg, etto, pz, lt o ct\n• disponibile (opzionale: si/no)\n\n'
           'Ogni importazione aggiorna i prodotti con lo stesso nome e aggiunge quelli nuovi.',
         ),
         actions: [TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('OK'))],
@@ -241,14 +241,14 @@ class _ProductFormState extends State<_ProductForm> {
               ),
             ),
             const SizedBox(width: 12),
-            SegmentedButton<String>(
-              segments: const [
-                ButtonSegment(value: 'kg', label: Text('kg')),
-                ButtonSegment(value: 'etto', label: Text('etto')),
-                ButtonSegment(value: 'pz', label: Text('pz')),
-              ],
-              selected: {_unit},
-              onSelectionChanged: (s) => setState(() => _unit = s.first),
+            SizedBox(
+              width: 130,
+              child: DropdownButtonFormField<String>(
+                initialValue: _unit,
+                decoration: const InputDecoration(labelText: 'Unità'),
+                items: [for (final u in units) DropdownMenuItem(value: u, child: Text(unitLong(u)))],
+                onChanged: (u) => setState(() => _unit = u ?? _unit),
+              ),
             ),
           ]),
           SwitchListTile(

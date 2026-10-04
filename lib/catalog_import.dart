@@ -13,7 +13,7 @@ class ImportResult {
 /// Legge un catalogo da Excel (.xlsx) o CSV.
 ///
 /// Colonne attese nella prima riga (l'ordine non conta, maiuscole ignorate):
-///   nome | categoria | prezzo | unita (kg, etto, pz) | disponibile (opzionale, si/no)
+///   nome | categoria | prezzo | unita (kg, etto, pz, lt, ct) | disponibile (opzionale, si/no)
 ImportResult parseCatalog(Uint8List bytes, String fileName) {
   final table = fileName.toLowerCase().endsWith('.csv') ? _readCsv(bytes) : _readXlsx(bytes);
   if (table.isEmpty) return ImportResult([], ['Il file è vuoto']);
@@ -51,7 +51,7 @@ ImportResult parseCatalog(Uint8List bytes, String fileName) {
       continue;
     }
     if (unit == null) {
-      errors.add('Riga ${r + 1} ($name): unità non valida "${cell(iUnit)}" (usa kg, etto o pz)');
+      errors.add('Riga ${r + 1} ($name): unità non valida "${cell(iUnit)}" (usa kg, etto, pz, lt o ct)');
       continue;
     }
     if (!seen.add(name.toLowerCase())) {
@@ -78,13 +78,15 @@ double? parsePrice(String raw) {
   return v == null || v < 0 ? null : v;
 }
 
-/// "kg", "al kg", "€/kg", "all'etto", "hg", "pezzo" -> 'kg' | 'etto' | 'pz'.
+/// "kg", "al kg", "€/kg", "all'etto", "hg", "pezzo", "litro", "cartone" -> unità interna.
 String? parseUnit(String raw) {
   final s = _norm(raw).replaceAll(RegExp(r'[^a-z0-9]'), '').replaceFirst(RegExp(r'^(all|al|per|a)'), '');
   return switch (s) {
     'kg' || 'kilo' || 'chilo' || 'kilogrammo' || 'chilogrammo' => 'kg',
     'etto' || 'hg' || 'ettogrammo' || '100g' || '100gr' => 'etto',
     'pz' || 'pezzo' || 'pezzi' || 'cad' || 'conf' || 'confezione' => 'pz',
+    'lt' || 'l' || 'litro' || 'litri' => 'lt',
+    'ct' || 'cartone' || 'cartoni' => 'ct',
     _ => null,
   };
 }

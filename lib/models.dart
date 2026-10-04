@@ -14,7 +14,7 @@ class Product {
   final String name;
   final String category;
   final double price;
-  final String unit; // 'kg' | 'etto' | 'pz'
+  final String unit; // 'kg' | 'etto' | 'pz' | 'lt' | 'ct'
   final bool available;
 
   /// Prezzo di listino generale; [price] è quello effettivo per l'utente collegato.

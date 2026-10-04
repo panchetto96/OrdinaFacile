@@ -31,7 +31,7 @@ class QuantityStepper extends StatelessWidget {
         ],
       ),
     );
-    if (value != null) cart.setQuantity(product, product.unit == 'pz' ? value.roundToDouble() : value);
+    if (value != null) cart.setQuantity(product, wholeUnit(product.unit) ? value.roundToDouble() : value);
   }
 
   @override
