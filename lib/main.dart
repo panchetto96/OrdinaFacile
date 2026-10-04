@@ -8,6 +8,7 @@ import 'cart.dart';
 import 'config.dart';
 import 'repo.dart';
 import 'screens/auth_gate.dart';
+import 'theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,11 +37,7 @@ class OrdinaFacileApp extends StatelessWidget {
     return MaterialApp(
       title: 'OrdinaFacile',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorSchemeSeed: const Color(0xFF2E7D32),
-        useMaterial3: true,
-        inputDecorationTheme: const InputDecorationTheme(border: OutlineInputBorder()),
-      ),
+      theme: buildTheme(),
       locale: const Locale('it', 'IT'),
       supportedLocales: const [Locale('it', 'IT')],
       localizationsDelegates: const [
