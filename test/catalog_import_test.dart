@@ -23,7 +23,9 @@ void main() {
     expect(parseUnit("all'etto"), 'etto');
     expect(parseUnit('hg'), 'etto');
     expect(parseUnit('Pezzo'), 'pz');
-    expect(parseUnit('litro'), isNull);
+    expect(parseUnit('LT'), 'lt');
+    expect(parseUnit('CT'), 'ct');
+    expect(parseUnit('sacco'), isNull);
   });
 
   test('CSV con punto e virgola, virgolette e righe errate', () {

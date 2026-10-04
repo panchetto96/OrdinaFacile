@@ -15,7 +15,7 @@ const fmtEuro = (n: number) =>
 const esc = (s: string) =>
   String(s ?? "").replace(/[&<>"]/g, (ch) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[ch]!);
 
-const unitLabel: Record<string, string> = { kg: "kg", etto: "hg", pz: "pz" };
+const unitLabel: Record<string, string> = { kg: "kg", etto: "hg", pz: "pz", lt: "lt", ct: "ct" };
 
 Deno.serve(async (req) => {
   const payload = await req.json();

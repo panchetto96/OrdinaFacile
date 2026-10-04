@@ -6,14 +6,22 @@ class Product {
     required this.price,
     required this.unit,
     required this.available,
-  });
+    double? listPrice,
+    this.customPrice = false,
+  }) : listPrice = listPrice ?? price;
 
   final int id;
   final String name;
   final String category;
   final double price;
-  final String unit; // 'kg' | 'etto' | 'pz'
+  final String unit; // 'kg' | 'etto' | 'pz' | 'lt' | 'ct'
   final bool available;
+
+  /// Prezzo di listino generale; [price] è quello effettivo per l'utente collegato.
+  final double listPrice;
+
+  /// true se il titolare ha fissato un prezzo riservato a questo cliente.
+  final bool customPrice;
 
   /// Passo per i pulsanti +/- del carrello.
   double get step => unit == 'kg' ? 0.5 : 1;
@@ -25,6 +33,8 @@ class Product {
         price: (m['price'] as num).toDouble(),
         unit: m['unit'] as String,
         available: m['available'] as bool,
+        listPrice: (m['list_price'] as num?)?.toDouble(),
+        customPrice: m['custom_price'] as bool? ?? false,
       );
 }
 
