@@ -83,10 +83,10 @@ class _CatalogScreenState extends State<CatalogScreen> {
                         separatorBuilder: (_, _) => const Divider(height: 1),
                         itemBuilder: (_, i) {
                           final p = shown[i];
-                          return ListTile(
+                          return withCategoryHeader(context, [for (final s in shown) s.category], i, ListTile(
                             title: Text(p.name),
                             subtitle: Text.rich(TextSpan(children: [
-                              TextSpan(text: '${p.category} · ${pricePerUnit(p.price, p.unit)}'),
+                              TextSpan(text: pricePerUnit(p.price, p.unit)),
                               if (p.customPrice && p.price < p.listPrice)
                                 TextSpan(
                                   text: '  ${euro(p.listPrice)}',
@@ -99,7 +99,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
                                 ),
                             ])),
                             trailing: QuantityStepper(product: p),
-                          );
+                          ));
                         },
                       ),
               ),

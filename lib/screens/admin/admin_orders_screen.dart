@@ -41,10 +41,46 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
   Future<void> _setStatus(Order o, String status) async {
     try {
       await _repo.setOrderStatus(o.id, status);
-      if (mounted) setState(_load);
+      if (!mounted) return;
+      setState(_load);
+      showMessage(context, 'Ordine #${o.id}: ${statusLabel(status).toLowerCase()}. Lo trovi in "${_filterLabel(status)}".');
     } catch (e) {
       if (mounted) showError(context, e);
     }
+  }
+
+  Future<void> _cancel(Order o) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Annullare l\'ordine #${o.id}?'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('No')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Annulla ordine')),
+        ],
+      ),
+    );
+    if (ok == true) await _setStatus(o, 'annullato');
+  }
+
+  /// Etichetta del filtro in cui finisce un ordine con questo stato.
+  static String _filterLabel(String status) => switch (status) {
+        'nuovo' => 'Nuovi',
+        'visto' => 'Visti',
+        _ => 'Annullati',
+      };
+
+  /// Solo per gli ordini nuovi: "Annulla" e "Segna come visto".
+  Widget? _actions(Order o) {
+    if (o.status != 'nuovo') return null;
+    return Wrap(spacing: 8, runSpacing: 4, alignment: WrapAlignment.end, children: [
+      TextButton(onPressed: () => _cancel(o), child: const Text('Annulla')),
+      FilledButton.icon(
+        onPressed: () => _setStatus(o, 'visto'),
+        icon: const Icon(Icons.check),
+        label: const Text('Segna come visto'),
+      ),
+    ]);
   }
 
   @override
@@ -60,7 +96,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
               Padding(
                 padding: const EdgeInsets.only(right: 8),
                 child: ChoiceChip(
-                  label: Text(s == null ? 'Tutti' : statusLabel(s)),
+                  label: Text(s == null ? 'Tutti' : _filterLabel(s)),
                   selected: _status == s,
                   onSelected: (_) => setState(() {
                     _status = s;
@@ -88,10 +124,7 @@ class _AdminOrdersScreenState extends State<AdminOrdersScreen> {
                         OrderTile(
                           order: o,
                           showCustomer: true,
-                          footer: Wrap(spacing: 8, children: [
-                            for (final s in orderStatuses.where((s) => s != o.status))
-                              OutlinedButton(onPressed: () => _setStatus(o, s), child: Text('Segna ${statusLabel(s).toLowerCase()}')),
-                          ]),
+                          footer: _actions(o),
                         ),
                     ]),
             ),

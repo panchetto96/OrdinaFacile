@@ -124,12 +124,12 @@ class _AdminCatalogScreenState extends State<AdminCatalogScreen> {
                 separatorBuilder: (_, _) => const Divider(height: 1),
                 itemBuilder: (_, i) {
                   final p = shown[i];
-                  return ListTile(
+                  return withCategoryHeader(context, [for (final s in shown) s.category], i, ListTile(
                     title: Text(p.name, style: p.available ? null : const TextStyle(decoration: TextDecoration.lineThrough)),
-                    subtitle: Text('${p.category} · ${pricePerUnit(p.price, p.unit)}${p.available ? '' : ' · esaurito'}'),
+                    subtitle: Text('${pricePerUnit(p.price, p.unit)}${p.available ? '' : ' · esaurito'}'),
                     trailing: const Icon(Icons.edit_outlined),
                     onTap: () => _edit(p),
-                  );
+                  ));
                 },
               );
             },
