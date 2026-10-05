@@ -68,6 +68,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  # Logo dal file vettoriale (PDF) di Dofrelli; 2.0x e 3.0x per schermi ad alta densità
   assets:
     - assets/images/logo.png
 
