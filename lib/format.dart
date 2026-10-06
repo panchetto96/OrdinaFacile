@@ -20,15 +20,6 @@ String unitShort(String unit) => switch (unit) {
 /// "€ 12,50 / kg"
 String pricePerUnit(num price, String unit) => '${euro(price)} / ${unitLong(unit)}';
 
-/// Come si vende il prodotto, per i clienti (che non vedono i prezzi): "Al kg", "All'etto"...
-String soldBy(String unit) => switch (unit) {
-      'kg' => 'Al kg',
-      'etto' => 'All\'etto',
-      'lt' => 'Al litro',
-      'ct' => 'Al cartone',
-      _ => 'Al pezzo',
-    };
-
 /// Nome per esteso dell'unità, per i prezzi: "kg", "etto", "litro", "cartone", "pezzo".
 String unitLong(String unit) => switch (unit) {
       'kg' => 'kg',

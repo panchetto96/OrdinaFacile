@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../cart.dart';
-import '../../format.dart';
 import '../../models.dart';
 import '../../repo.dart';
 import '../../ui.dart';
+import 'contact_banner.dart';
 import 'quantity_stepper.dart';
 
 class CatalogScreen extends StatefulWidget {
@@ -67,6 +67,7 @@ class _CatalogScreenState extends State<CatalogScreen> {
               .where((p) => _query.isEmpty || p.name.toLowerCase().contains(_query) || p.category.toLowerCase().contains(_query))
               .toList();
           return Column(children: [
+            const ContactBanner(),
             SizedBox(
               height: 52,
               child: ListView(
@@ -93,8 +94,6 @@ class _CatalogScreenState extends State<CatalogScreen> {
                           final p = shown[i];
                           return withCategoryHeader(context, [for (final s in shown) s.category], i, ListTile(
                             title: Text(p.name),
-                            // I clienti non vedono i prezzi: solo come si vende il prodotto.
-                            subtitle: Text(soldBy(p.unit)),
                             trailing: widget.ordering ? QuantityStepper(product: p) : null,
                           ));
                         },
