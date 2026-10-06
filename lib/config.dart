@@ -6,5 +6,4 @@ const supabaseKey = String.fromEnvironment('SUPABASE_KEY', defaultValue: 'sb_pub
 
 // Contatti di Dofrelli Distribuzione mostrati ai clienti nel listino.
 const contactMobile = '331 2130481';
-const contactPhone = '06 20766404';
 const contactEmail = 'info@dofrellidistribuzione.it';
