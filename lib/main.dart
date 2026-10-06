@@ -7,6 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'app_update.dart';
 import 'cart.dart';
 import 'config.dart';
+import 'remember_me.dart';
 import 'repo.dart';
 import 'screens/auth_gate.dart';
 import 'theme.dart';
@@ -19,6 +20,7 @@ Future<void> main() async {
     return;
   }
   await Supabase.initialize(url: supabaseUrl, publishableKey: supabaseKey);
+  await RememberMe.applyOnStartup(Supabase.instance.client);
   runApp(
     MultiProvider(
       providers: [

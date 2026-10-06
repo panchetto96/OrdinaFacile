@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../remember_me.dart';
 import '../../repo.dart';
 import '../../ui.dart';
+import 'reset_password_screen.dart';
 import 'signup_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -17,12 +19,26 @@ class _LoginScreenState extends State<LoginScreen> {
   final _login = TextEditingController();
   final _password = TextEditingController();
   bool _busy = false;
+  bool _remember = true;
+
+  @override
+  void initState() {
+    super.initState();
+    RememberMe.load().then((saved) {
+      if (!mounted) return;
+      setState(() {
+        _remember = saved.$1;
+        if (_login.text.isEmpty) _login.text = saved.$2;
+      });
+    });
+  }
 
   Future<void> _submit() async {
     if (!_form.currentState!.validate()) return;
     setState(() => _busy = true);
     try {
       await context.read<Repo>().signIn(_login.text, _password.text);
+      await RememberMe.save(remember: _remember, email: _login.text);
     } catch (e) {
       if (mounted) showError(context, e);
     } finally {
@@ -61,12 +77,22 @@ class _LoginScreenState extends State<LoginScreen> {
                   onFieldSubmitted: (_) => _submit(),
                   validator: (v) => (v ?? '').isEmpty ? 'Campo obbligatorio' : null,
                 ),
-                const SizedBox(height: 20),
+                CheckboxListTile(
+                  value: _remember,
+                  onChanged: (v) => setState(() => _remember = v ?? true),
+                  title: const Text('Ricordami'),
+                  controlAffinity: ListTileControlAffinity.leading,
+                  contentPadding: EdgeInsets.zero,
+                ),
+                const SizedBox(height: 8),
                 FilledButton(
                   onPressed: _busy ? null : _submit,
                   child: _busy ? const SizedBox.square(dimension: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Accedi'),
                 ),
-                const SizedBox(height: 8),
+                TextButton(
+                  onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => ResetPasswordScreen(email: _login.text))),
+                  child: const Text('Password dimenticata?'),
+                ),
                 TextButton(
                   onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const SignupScreen())),
                   child: const Text('Non hai un account? Registrati'),

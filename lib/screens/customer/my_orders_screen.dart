@@ -32,7 +32,7 @@ class MyOrdersScreenState extends State<MyOrdersScreen> {
       showMessage(
         context,
         missing.isEmpty
-            ? 'Prodotti dell\'ordine #${order.id} aggiunti al carrello, ai prezzi di oggi'
+            ? 'Prodotti dell\'ordine #${order.id} aggiunti al carrello'
             : 'Aggiunti al carrello. Non più disponibili: ${missing.join(', ')}',
       );
     } catch (e) {

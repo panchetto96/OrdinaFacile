@@ -35,6 +35,16 @@ class Repo {
 
   Future<void> signOut() => db.auth.signOut();
 
+  /// Manda all'email il codice per reimpostare la password (modello email
+  /// "Reset Password" di Supabase con {{ .Token }}).
+  Future<void> sendPasswordReset(String email) => db.auth.resetPasswordForEmail(email.trim());
+
+  /// Verifica il codice ricevuto (che fa entrare l'utente) e imposta la nuova password.
+  Future<void> resetPassword({required String email, required String code, required String password}) async {
+    await db.auth.verifyOTP(email: email.trim(), token: code.trim(), type: OtpType.recovery);
+    await db.auth.updateUser(UserAttributes(password: password));
+  }
+
   /// Cancella i dati personali del cliente e disattiva l'accesso; ordini e fatture
   /// restano senza dati personali per la contabilità.
   Future<void> deleteMyAccount() async {

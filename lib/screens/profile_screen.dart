@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import '../models.dart';
 import '../repo.dart';
 import '../ui.dart';
+import 'help/manual_screen.dart';
+import 'help/tutorial_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key, required this.profile});
@@ -91,6 +93,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 20),
           FilledButton(onPressed: _busy ? null : _save, child: const Text('Salva')),
+          const SizedBox(height: 32),
+          OutlinedButton.icon(
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => TutorialScreen(isAdmin: p.isAdmin))),
+            icon: const Icon(Icons.school_outlined),
+            label: const Text('Rivedi tutorial'),
+          ),
+          const SizedBox(height: 12),
+          OutlinedButton.icon(
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => ManualScreen(isAdmin: p.isAdmin))),
+            icon: const Icon(Icons.menu_book_outlined),
+            label: const Text('Manuale utente'),
+          ),
           if (!p.isAdmin) ...[
             const SizedBox(height: 40),
             TextButton.icon(

@@ -13,6 +13,9 @@ String _authMessage(String m) {
   if (l.contains('invalid login')) return 'Email o password errati';
   if (l.contains('already registered')) return 'Esiste già un account con questa email';
   if (l.contains('email not confirmed')) return 'Conferma prima l\'email cliccando il link che ti abbiamo inviato';
+  if (l.contains('expired') || l.contains('invalid') && l.contains('token')) return 'Codice errato o scaduto: chiedine uno nuovo';
+  if (l.contains('rate limit') || l.contains('security purposes')) return 'Troppe richieste: aspetta qualche minuto e riprova';
+  if (l.contains('should be different')) return 'La nuova password deve essere diversa dalla precedente';
   if (l.contains('password')) return 'La password deve avere almeno 6 caratteri';
   return m;
 }
