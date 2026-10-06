@@ -33,7 +33,7 @@ class _FreeOrderScreenState extends State<FreeOrderScreen> {
   Future<void> _pick(ImageSource source) async {
     try {
       // Ridotta e compressa: un foglio resta leggibile e pesa poche centinaia di KB.
-      final file = await ImagePicker().pickImage(source: source, maxWidth: 1800, maxHeight: 1800, imageQuality: 75);
+      final file = await ImagePicker().pickImage(source: source, maxWidth: 1400, maxHeight: 1400, imageQuality: 65);
       if (file == null) return;
       final bytes = await file.readAsBytes();
       final dot = file.name.lastIndexOf('.');
