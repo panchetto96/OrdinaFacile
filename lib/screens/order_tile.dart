@@ -56,7 +56,8 @@ class OrderTile extends StatelessWidget {
               child: Row(children: [
                 Expanded(child: Text(i.productName)),
                 Text('${qty(i.quantity)} ${unitShort(i.unit)}'),
-                SizedBox(width: 100, child: Text(pricePerUnit(i.unitPrice, i.unit), textAlign: TextAlign.right)),
+                // Il prezzo lo vede solo il titolare.
+                if (showCustomer) SizedBox(width: 100, child: Text(pricePerUnit(i.unitPrice, i.unit), textAlign: TextAlign.right)),
               ]),
             ),
           if (order.note.isNotEmpty) ...[
