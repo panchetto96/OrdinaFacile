@@ -9,6 +9,7 @@ import '../ui.dart';
 import 'admin/admin_home.dart';
 import 'auth/login_screen.dart';
 import 'customer/customer_home.dart';
+import 'help/tutorial_screen.dart';
 
 /// Mostra il login o la home giusta (cliente / titolare) in base alla sessione.
 class AuthGate extends StatelessWidget {
@@ -53,13 +54,36 @@ class _RoleRouterState extends State<_RoleRouter> {
         future: _profile,
         onRetry: () => setState(() => _profile = context.read<Repo>().myProfile()),
         builder: (p) => p.isAdmin
-            ? AdminHome(profile: p)
+            ? _WithTutorial(isAdmin: true, child: AdminHome(profile: p))
             : p.approved
-                ? CustomerHome(profile: p)
+                ? _WithTutorial(isAdmin: false, child: CustomerHome(profile: p))
                 : _PendingApproval(onRetry: () => setState(() => _profile = context.read<Repo>().myProfile())),
       ),
     );
   }
+}
+
+/// Al primo ingresso di quel ruolo su questo telefono apre il tutorial.
+class _WithTutorial extends StatefulWidget {
+  const _WithTutorial({required this.isAdmin, required this.child});
+  final bool isAdmin;
+  final Widget child;
+
+  @override
+  State<_WithTutorial> createState() => _WithTutorialState();
+}
+
+class _WithTutorialState extends State<_WithTutorial> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) TutorialScreen.showIfFirstTime(context, isAdmin: widget.isAdmin);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 /// Cliente appena registrato: niente prezzi né ordini finché il titolare non lo abilita.
