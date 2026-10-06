@@ -1,0 +1,38 @@
+name: Versione web
+
+# Versione web (per iPhone e PC): stessa app, stesso database.
+# Su main viene pubblicata sul ramo gh-pages (GitHub Pages).
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  # Indirizzo provvisorio https://panchetto96.github.io/OrdinaFacile/.
+  # Con il sottodominio di Dofrelli diventa "/" e si aggiunge il file CNAME.
+  WEB_BASE_HREF: /OrdinaFacile/
+
+jobs:
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      # CanvasKit servito dal nostro indirizzo, non dal CDN di Google.
+      - run: flutter build web --release --no-web-resources-cdn --no-wasm-dry-run --base-href "$WEB_BASE_HREF"
+      - name: Pubblica su GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: build/web
+          force_orphan: true
+          commit_message: Versione web

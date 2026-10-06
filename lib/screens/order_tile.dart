@@ -79,25 +79,50 @@ class OrderTile extends StatelessWidget {
 }
 
 /// Apre il PDF della fattura nel browser o nel lettore PDF del telefono.
-class InvoiceButton extends StatelessWidget {
+/// Il link firmato si prepara prima del tocco: nel browser dell'iPhone una pagina
+/// aperta dopo un'attesa viene bloccata come popup.
+class InvoiceButton extends StatefulWidget {
   const InvoiceButton({super.key, required this.invoice});
   final Invoice invoice;
 
-  Future<void> _open(BuildContext context) async {
+  @override
+  State<InvoiceButton> createState() => _InvoiceButtonState();
+}
+
+class _InvoiceButtonState extends State<InvoiceButton> {
+  String? _url;
+  DateTime? _urlAt;
+
+  @override
+  void initState() {
+    super.initState();
+    _prepare().ignore(); // se fallisce, riprova al tocco
+  }
+
+  Future<String> _prepare() async {
+    final url = await context.read<Repo>().invoiceUrl(widget.invoice.filePath);
+    _url = url;
+    _urlAt = DateTime.now();
+    return url;
+  }
+
+  Future<void> _open() async {
     try {
-      final url = await context.read<Repo>().invoiceUrl(invoice.filePath);
+      // Il link vale un'ora: se è più vecchio se ne chiede uno nuovo.
+      final fresh = _url != null && DateTime.now().difference(_urlAt!) < const Duration(minutes: 50);
+      final url = fresh ? _url! : await _prepare();
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
     } catch (e) {
-      if (context.mounted) showError(context, e);
+      if (mounted) showError(context, e);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return OutlinedButton.icon(
-      onPressed: () => _open(context),
+      onPressed: _open,
       icon: const Icon(Icons.picture_as_pdf),
-      label: Text(invoice.label),
+      label: Text(widget.invoice.label),
     );
   }
 }
