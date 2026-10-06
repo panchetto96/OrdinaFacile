@@ -69,7 +69,7 @@ class _CartScreenState extends State<CartScreen> {
               for (final l in cart.lines) ...[
                 ListTile(
                   title: Text(l.product.name),
-                  subtitle: Text(pricePerUnit(l.product.price, l.product.unit)),
+                  subtitle: Text(soldBy(l.product.unit)),
                   trailing: QuantityStepper(product: l.product),
                 ),
                 const Divider(height: 1),

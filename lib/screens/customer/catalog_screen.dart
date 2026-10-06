@@ -93,19 +93,8 @@ class _CatalogScreenState extends State<CatalogScreen> {
                           final p = shown[i];
                           return withCategoryHeader(context, [for (final s in shown) s.category], i, ListTile(
                             title: Text(p.name),
-                            subtitle: Text.rich(TextSpan(children: [
-                              TextSpan(text: pricePerUnit(p.price, p.unit)),
-                              if (p.customPrice && p.price < p.listPrice)
-                                TextSpan(
-                                  text: '  ${euro(p.listPrice)}',
-                                  style: const TextStyle(decoration: TextDecoration.lineThrough),
-                                ),
-                              if (p.customPrice)
-                                TextSpan(
-                                  text: '\nPrezzo riservato a te',
-                                  style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600),
-                                ),
-                            ])),
+                            // I clienti non vedono i prezzi: solo come si vende il prodotto.
+                            subtitle: Text(soldBy(p.unit)),
                             trailing: widget.ordering ? QuantityStepper(product: p) : null,
                           ));
                         },
