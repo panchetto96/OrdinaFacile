@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../cart.dart';
-import '../../format.dart';
 import '../../repo.dart';
 import '../../ui.dart';
 import 'quantity_stepper.dart';
@@ -69,7 +68,6 @@ class _CartScreenState extends State<CartScreen> {
               for (final l in cart.lines) ...[
                 ListTile(
                   title: Text(l.product.name),
-                  subtitle: Text(soldBy(l.product.unit)),
                   trailing: QuantityStepper(product: l.product),
                 ),
                 const Divider(height: 1),
