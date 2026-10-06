@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:package_info_plus/package_info_plus.dart';
@@ -45,7 +46,8 @@ class _UpdateCheckerState extends State<UpdateChecker> {
   @override
   void initState() {
     super.initState();
-    _check();
+    // La versione web si aggiorna da sola a ogni apertura: niente APK da proporre.
+    if (!kIsWeb) _check();
   }
 
   Future<void> _check() async {

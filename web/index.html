@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <!-- Sostituito da --base-href in fase di build (es. /OrdinaFacile/ su GitHub Pages, / sul sottodominio). -->
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="OrdinaFacile: ordini online per i clienti di Dofrelli Distribuzione.">
+  <meta name="theme-color" content="#761413">
+
+  <!-- iPhone: "Aggiungi alla schermata Home" la apre a schermo intero come un'app -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="OrdinaFacile">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="favicon.png">
+
+  <title>OrdinaFacile</title>
+  <link rel="manifest" href="manifest.json">
+  <style>
+    html, body { margin: 0; height: 100%; background: #FBF7F4; }
+    #caricamento { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #FBF7F4; }
+    #caricamento img { width: 240px; max-width: 70vw; }
+    #suggerimento-home {
+      position: fixed; left: 12px; right: 12px; bottom: calc(12px + env(safe-area-inset-bottom));
+      z-index: 1000; display: none; gap: 12px; align-items: flex-start;
+      padding: 14px 16px; border-radius: 14px; background: #761413; color: #ffffff;
+      font: 15px/1.4 -apple-system, BlinkMacSystemFont, sans-serif; box-shadow: 0 4px 16px rgba(0,0,0,.25);
+    }
+    #suggerimento-home button { flex: none; border: 0; background: transparent; color: #ffffff; font-size: 22px; line-height: 1; padding: 0 4px; }
+  </style>
+</head>
+<body>
+  <div id="caricamento"><img src="icons/splash.png" alt="Dofrelli Distribuzione"></div>
+
+  <!-- Solo su iPhone/iPad in Safari, finché non è stata aggiunta alla Home -->
+  <div id="suggerimento-home" role="note">
+    <div>Per usarla come un'app: tocca <b>Condividi</b> (il quadrato con la freccia) e poi <b>Aggiungi alla schermata Home</b>.</div>
+    <button type="button" aria-label="Chiudi">&times;</button>
+  </div>
+
+  <script>
+    window.addEventListener('flutter-first-frame', function () {
+      var c = document.getElementById('caricamento');
+      if (c) c.remove();
+    });
+    (function () {
+      var ios = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      var installata = window.navigator.standalone === true ||
+        window.matchMedia('(display-mode: standalone)').matches;
+      var chiuso = false;
+      try { chiuso = localStorage.getItem('suggerimento_home_chiuso') === '1'; } catch (e) {}
+      if (!ios || installata || chiuso) return;
+      var box = document.getElementById('suggerimento-home');
+      box.style.display = 'flex';
+      box.querySelector('button').addEventListener('click', function () {
+        box.remove();
+        try { localStorage.setItem('suggerimento_home_chiuso', '1'); } catch (e) {}
+      });
+    })();
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
