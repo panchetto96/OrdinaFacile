@@ -49,7 +49,10 @@ class OrderTile extends StatelessWidget {
             SelectableText(order.body, style: Theme.of(context).textTheme.bodyLarge),
             const SizedBox(height: 8),
           ],
-          if (order.photoPath != null) _OrderPhoto(path: order.photoPath!),
+          if (order.photoPath != null)
+            order.photoDeleted
+                ? const Text('Foto eliminata dopo 60 giorni', style: TextStyle(fontStyle: FontStyle.italic))
+                : _OrderPhoto(path: order.photoPath!),
           for (final i in order.items)
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 2),
