@@ -25,15 +25,9 @@ class ContactBanner extends StatelessWidget {
           const SizedBox(height: 8),
           ListTile(
             leading: const Icon(Icons.smartphone),
-            title: const Text('Chiama il cellulare'),
+            title: const Text('Chiama'),
             subtitle: const Text(contactMobile),
             onTap: () => _open(context, Uri(scheme: 'tel', path: digits(contactMobile))),
-          ),
-          ListTile(
-            leading: const Icon(Icons.phone),
-            title: const Text('Chiama l\'ufficio'),
-            subtitle: const Text(contactPhone),
-            onTap: () => _open(context, Uri(scheme: 'tel', path: digits(contactPhone))),
           ),
           ListTile(
             leading: const Icon(Icons.email_outlined),
