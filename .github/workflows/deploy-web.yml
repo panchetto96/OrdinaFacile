@@ -1,7 +1,8 @@
 name: Versione web
 
 # Versione web (per iPhone e PC): stessa app, stesso database.
-# Su main viene pubblicata sul ramo gh-pages (GitHub Pages).
+# Su main viene pubblicata sul ramo gh-pages, che Cloudflare Pages mette online
+# (GitHub Pages gratuito non funziona con un progetto privato).
 on:
   push:
     branches: [main]
@@ -12,9 +13,8 @@ permissions:
   contents: write
 
 env:
-  # Indirizzo provvisorio https://panchetto96.github.io/OrdinaFacile/.
-  # Con il sottodominio di Dofrelli diventa "/" e si aggiunge il file CNAME.
-  WEB_BASE_HREF: /OrdinaFacile/
+  # Cloudflare serve il sito dalla radice (xxx.pages.dev/ e poi il sottodominio Dofrelli).
+  WEB_BASE_HREF: /
 
 jobs:
   web:
@@ -28,7 +28,7 @@ jobs:
       - run: flutter pub get
       # CanvasKit servito dal nostro indirizzo, non dal CDN di Google.
       - run: flutter build web --release --no-web-resources-cdn --no-wasm-dry-run --base-href "$WEB_BASE_HREF"
-      - name: Pubblica su GitHub Pages
+      - name: Pubblica sul ramo gh-pages
         if: github.ref == 'refs/heads/main'
         uses: peaceiris/actions-gh-pages@v4
         with:
